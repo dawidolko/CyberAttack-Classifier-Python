@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions
 REM =============================================================
 REM  Cyber Security Attacks Classifier — Launcher (Windows)
 REM =============================================================
@@ -11,30 +12,58 @@ echo   Random Forest — ML Pipeline + Streamlit Dashboard
 echo ============================================================
 echo.
 
-REM --- Find Python ---
+REM --- Find Python 3.10–3.13 (3.14+ breaks numpy/scipy wheels) ---
 echo Step 1/4: Checking Python installation...
 
-set PYTHON=
-where python3 >nul 2>&1 && set PYTHON=python3
-if "%PYTHON%"=="" (
-    where python >nul 2>&1 && set PYTHON=python
-)
-if "%PYTHON%"=="" (
-    echo ERROR: Python is not installed or not in PATH.
-    echo Please install Python 3.10+: https://www.python.org/downloads/
-    pause
-    exit /b 1
+set "PYTHON="
+
+where py >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+  py -3.13 -c "import sys; assert sys.version_info[:2]==(3,13)" 2>nul && set "PYTHON=py -3.13"
+  if not defined PYTHON py -3.12 -c "import sys; assert sys.version_info[:2]==(3,12)" 2>nul && set "PYTHON=py -3.12"
+  if not defined PYTHON py -3.11 -c "import sys; assert sys.version_info[:2]==(3,11)" 2>nul && set "PYTHON=py -3.11"
+  if not defined PYTHON py -3.10 -c "import sys; assert sys.version_info[:2]==(3,10)" 2>nul && set "PYTHON=py -3.10"
 )
 
+if not defined PYTHON where python3.13 >nul 2>&1 && set "PYTHON=python3.13"
+if not defined PYTHON where python3.12 >nul 2>&1 && set "PYTHON=python3.12"
+if not defined PYTHON where python3.11 >nul 2>&1 && set "PYTHON=python3.11"
+if not defined PYTHON where python3.10 >nul 2>&1 && set "PYTHON=python3.10"
+
+if not defined PYTHON (
+  where python3 >nul 2>&1 && python3 -c "import sys; assert (3,10)<=sys.version_info[:2]<=(3,13)" 2>nul && set "PYTHON=python3"
+)
+if not defined PYTHON (
+  where python >nul 2>&1 && python -c "import sys; assert (3,10)<=sys.version_info[:2]<=(3,13)" 2>nul && set "PYTHON=python"
+)
+
+if not defined PYTHON (
+  echo ERROR: Python 3.10–3.13 is required but not found.
+  echo Python 3.14 is not supported yet for this stack.
+  echo Install from https://www.python.org/downloads/ ^(e.g. 3.12^) and ensure it is on PATH.
+  pause
+  exit /b 1
+)
+
+echo Using:
 %PYTHON% --version
 echo.
+
+REM --- Drop venv if it was built with an unsupported Python (e.g. 3.14) ---
+if exist "venv\Scripts\python.exe" (
+  venv\Scripts\python.exe -c "import sys; assert (3,10)<=sys.version_info[:2]<=(3,13)" 2>nul
+  if errorlevel 1 (
+    echo Removing incompatible existing venv ^(wrong Python version^)...
+    rmdir /s /q venv
+  )
+)
 
 REM --- Create / activate virtual environment ---
 echo Step 2/4: Setting up virtual environment...
 
 if not exist "venv" (
-    echo    Creating virtual environment...
-    %PYTHON% -m venv venv
+  echo    Creating virtual environment...
+  %PYTHON% -m venv venv
 )
 
 call venv\Scripts\activate.bat
@@ -51,9 +80,9 @@ echo.
 python pipeline.py
 
 if %ERRORLEVEL% neq 0 (
-    echo ERROR: Pipeline failed. Check the output above.
-    pause
-    exit /b 1
+  echo ERROR: Pipeline failed. Check the output above.
+  pause
+  exit /b 1
 )
 
 REM --- Launch Streamlit ---

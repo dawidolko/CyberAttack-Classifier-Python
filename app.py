@@ -29,6 +29,7 @@ st.set_page_config(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "data", "cybersecurity_attacks.csv")
 RESULTS_DIR = os.path.join(BASE_DIR, "results")
+LOGO_PATH = os.path.join(BASE_DIR, "img", "logo.svg")
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +61,17 @@ def check_results():
 # ---------------------------------------------------------------------------
 # Sidebar
 # ---------------------------------------------------------------------------
+if os.path.isfile(LOGO_PATH):
+    st.sidebar.image(LOGO_PATH, width=96)
 st.sidebar.title("🛡️ Cyber Attack Classifier")
+with st.sidebar.expander("Co to EDA i CV?", expanded=False):
+    st.markdown(
+        """
+**EDA** (*Exploratory Data Analysis*) — **eksploracyjna analiza danych**: wstępne poznanie zbioru (rozmiar, braki, rozkłady, korelacje) **bez** trenowania modelu.
+
+**CV** (*Cross-Validation*) — **walidacja krzyżowa**: dane treningowe dzieli się na *k* części (*folds*); model *k* razy jest uczony i sprawdzany tak, by każda część raz posłużyła jako mini-test. U nas: **5-fold** na zbiorze treningowym — stabilniejsza ocena niż jeden losowy podział.
+        """
+    )
 st.sidebar.markdown("---")
 
 if not check_results():
@@ -74,6 +85,7 @@ tab_names = [
     "⚖️ Model Comparison",
     "📈 Results & Evaluation",
     "🔍 Interactive Explorer",
+    "ℹ️ Informacje",
 ]
 selected_tab = st.sidebar.radio("Navigation", tab_names)
 
@@ -698,3 +710,75 @@ elif selected_tab == tab_names[6]:
                  "Anomaly Scores", "Attack Type", "Severity Level", "Action Taken"],
     )
     st.dataframe(filtered[display_cols].head(100), width="stretch", hide_index=True)
+
+# ===================================================================
+# TAB 8: Informacje (PL) — przewodnik po aplikacji
+# ===================================================================
+elif selected_tab == tab_names[7]:
+    st.title("ℹ️ Informacje o projekcie i aplikacji")
+    st.markdown(
+        """
+Ten dokument opisuje **co robi projekt**, **jak go uruchomić** oraz **co znajdziesz w poszczególnych zakładkach** interfejsu Streamlit.
+        """
+    )
+    st.markdown("---")
+
+    st.markdown("### Cel projektu")
+    st.markdown(
+        """
+Aplikacja **Cyber Attack Classifier** służy do **klasyfikacji wieloklasowej** zdarzeń sieciowych z zestawu danych *Cyber Security Attacks* (Kaggle).
+Model przypisuje obserwację do jednej z trzech klas: **DDoS**, **Malware** lub **Intrusion**.
+
+**Co dostajesz w praktyce:**
+- automatyczne pobranie danych i uruchomienie potoku uczącego (`pipeline.py` przez `start.sh` / `start.bat`),
+- zapis wyników (metryki, wykresy, model) w folderze `results/` i `models/`,
+- interaktywny dashboard do przeglądania danych, preprocessingu, porównania modeli i oceny jakości (las losowy + modele pomocnicze).
+        """
+    )
+
+    st.markdown("### Uruchomienie")
+    st.markdown(
+        """
+1. **Linux / macOS:** w katalogu projektu uruchom `bash start.sh` — skrypt tworzy środowisko wirtualne, instaluje zależności, odpala `pipeline.py`, a na końcu startuje Streamlit (domyślnie `http://localhost:8501`).
+2. **Windows:** uruchom `start.bat` — ten sam przepływ.
+3. Jeśli uruchamiasz tylko dashboard: `streamlit run app.py` — wtedy potrzebne są już wygenerowane pliki w `results/` (w przeciwnym razie część zakładek pokaże ostrzeżenie).
+        """
+    )
+
+    st.markdown("### Zakładki — co widać i co zwraca")
+    st.markdown(
+        """
+| Zakładka | Zawartość |
+|----------|-----------|
+| **📋 Project Overview** | Skrót problemu: liczba rekordów (40 000), 25 atrybutów, 3 klasy; tabela atrybutów; opis modelu głównego (Random Forest). |
+| **📊 Exploratory Data Analysis** | Statystyki zbioru, próbka danych, rozkład klas, braki, histogramy i boxploty cech numerycznych, wykresy kategorii, macierz korelacji. **Nie trenuje modelu** — tylko eksploracja CSV. |
+| **⚙️ Preprocessing** | Kroki przygotowania danych: usunięte kolumny, obsługa braków, kodowanie etykiet, skalowanie; po uruchomieniu potoku — liczba cech końcowych, rozmiary zbioru treningowego/testowego, lista cech. |
+| **🌲 Model & Training** | Opis **Random Forest** (hiperparametry: m.in. 200 drzew, `max_depth=20`, `class_weight=balanced`), wyniki **5-krotnej walidacji krzyżowej** na zbiorze treningowym (dokładność per fold + średnia). |
+| **⚖️ Model Comparison** | Porównanie na zbiorze testowym (20%): **Random Forest**, **Gradient Boosting**, **k-NN (k=7)** — accuracy, F1, precyzja, czułość, ROC AUC (OvR), średnia CV; wykres słupkowy + opcjonalnie obraz z potoku. |
+| **📈 Results & Evaluation** | Szczegóły dla **lasu losowego** na teście: metryki zbiorcze, raport klasyfikacji per klasa, macierz pomyłek, krzywe ROC (OvR), ważność cech. |
+| **🔍 Interactive Explorer** | Filtrowanie surowych danych (typ ataku, protokół, severity), wykres rozrzutu dwóch cech numerycznych, rozkłady, tabela (do 100 wierszy w podglądzie). **Eksploracja**, nie predykcja na żywo z formularza. |
+| **ℹ️ Informacje** | Ten przewodnik po projekcie i nawigacji. |
+        """
+    )
+
+    st.markdown("### Pliki wynikowe (`results/`)")
+    st.markdown(
+        """
+Po `pipeline.py` generowane są m.in.: `metrics.json`, `model_comparison.json`, `cv_scores.json`, `preprocessing_info.json`, `roc_data.json`, `feature_importance.json`, macierz pomyłek (`confusion_matrix.npy`), wykresy PNG. Model zapisuje się jako `models/random_forest.joblib`.
+        """
+    )
+
+    st.markdown("### Słowniczek: EDA i CV")
+    st.markdown(
+        """
+- **EDA** — po angielsku *Exploratory Data Analysis*, czyli **eksploracyjna analiza danych**: przegląd zbioru (statystyki, wykresy, braki, zależności), zanim zbudujesz model.
+- **CV** — po angielsku *Cross-Validation*, czyli **walidacja krzyżowa**: wielokrotny trening/ocena na różnych podzbiorach danych treningowych (np. **5-fold**), żeby oszacować jakość modelu bez „podglądania” zbioru testowego.
+        """
+    )
+
+    st.markdown("### Uwaga metodologiczna")
+    st.markdown(
+        """
+Jakość predykcji zależy od **sygnału w danych** i doboru cech. Warto interpretować metryki z zakładki wyników łącznie z macierzą pomyłek i krzywymi ROC — szczególnie przy zbiorach, gdzie klasy są zbalansowane, a trudność zadania może być wysoka.
+        """
+    )
