@@ -151,7 +151,7 @@ if selected_tab == tab_names[0]:
             "IDS/IPS alert data", "Log source (Server/Firewall)"
         ],
     }
-    st.dataframe(pd.DataFrame(attr_data), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(attr_data), width="stretch", hide_index=True)
 
     st.markdown("#### Model")
     st.markdown(
@@ -182,7 +182,7 @@ elif selected_tab == tab_names[1]:
 
     # Sample data
     st.markdown("### Sample Data (first 10 rows)")
-    st.dataframe(df.head(10), use_container_width=True)
+    st.dataframe(df.head(10), width="stretch")
 
     # Class distribution
     st.markdown("### Target Variable: Attack Type")
@@ -199,7 +199,7 @@ elif selected_tab == tab_names[1]:
         )
         fig.update_traces(texttemplate="%{text:,}", textposition="outside")
         fig.update_layout(showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     with col2:
         fig = px.pie(
             values=counts.values, names=counts.index,
@@ -207,7 +207,7 @@ elif selected_tab == tab_names[1]:
             color_discrete_map={"DDoS": "#e74c3c", "Malware": "#3498db", "Intrusion": "#2ecc71"},
             title="Class Balance",
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Missing values
     st.markdown("### Missing Values Analysis")
@@ -223,7 +223,7 @@ elif selected_tab == tab_names[1]:
             color_discrete_sequence=["#e67e22"],
         )
         fig.update_traces(textposition="outside")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.success("No missing values found!")
 
@@ -240,7 +240,7 @@ elif selected_tab == tab_names[1]:
                 row=r + 1, col=c + 1,
             )
         fig.update_layout(height=600, showlegend=False, title_text="Numeric Feature Histograms")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     with num_tab2:
         fig = make_subplots(rows=1, cols=4, subplot_titles=num_cols)
         colors = ["#e74c3c", "#3498db", "#2ecc71", "#9b59b6"]
@@ -250,7 +250,7 @@ elif selected_tab == tab_names[1]:
                 row=1, col=i + 1,
             )
         fig.update_layout(height=400, showlegend=False, title_text="Numeric Feature Box Plots")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Categorical distributions
     st.markdown("### Categorical Feature Distributions")
@@ -266,7 +266,7 @@ elif selected_tab == tab_names[1]:
             row=r + 1, col=c + 1,
         )
     fig.update_layout(height=600, showlegend=False, title_text="Categorical Feature Distributions")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Correlation heatmap
     st.markdown("### Correlation Heatmap (Numeric Features)")
@@ -276,7 +276,7 @@ elif selected_tab == tab_names[1]:
         zmin=-1, zmax=1, title="Feature Correlation Matrix",
     )
     fig.update_layout(height=500)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # ===================================================================
 # TAB 3: Preprocessing
@@ -338,7 +338,7 @@ elif selected_tab == tab_names[2]:
             "Feature": preprocess_info["feature_names"],
             "Index": range(len(preprocess_info["feature_names"])),
         })
-        st.dataframe(feat_df, use_container_width=True, hide_index=True)
+        st.dataframe(feat_df, width="stretch", hide_index=True)
 
 # ===================================================================
 # TAB 4: Model & Training
@@ -379,7 +379,7 @@ elif selected_tab == tab_names[3]:
             "Parallel processing across all CPU cores",
         ],
     }
-    st.dataframe(pd.DataFrame(params), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(params), width="stretch", hide_index=True)
 
     st.markdown("### Cross-Validation Results")
     cv_data = load_json("cv_scores.json")
@@ -404,7 +404,7 @@ elif selected_tab == tab_names[3]:
             yaxis_range=[0, 1.05],
             height=400,
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.info("Run the pipeline first to see cross-validation results.")
 
@@ -475,7 +475,7 @@ elif selected_tab == tab_names[4]:
             "CV mean": "{:.4f}",
             "CV std": "{:.4f}",
         }),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -492,12 +492,12 @@ elif selected_tab == tab_names[4]:
         title="Test-set metrics by model",
     )
     fig.update_layout(yaxis_range=[0, 1.05], height=500)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     img = load_image("model_comparison.png")
     if img:
         st.markdown("### Static comparison chart (from pipeline)")
-        st.image(img, use_container_width=True)
+        st.image(img, width="stretch")
 
 # ===================================================================
 # TAB 6: Results & Evaluation
@@ -532,7 +532,7 @@ elif selected_tab == tab_names[5]:
         if k not in ["accuracy", "macro avg", "weighted avg"]
     }).T
     report_df.index.name = "Class"
-    st.dataframe(report_df.style.format("{:.4f}"), use_container_width=True)
+    st.dataframe(report_df.style.format("{:.4f}"), width="stretch")
 
     # Averages
     avg_df = pd.DataFrame({
@@ -540,7 +540,7 @@ elif selected_tab == tab_names[5]:
         if k in ["macro avg", "weighted avg"]
     }).T
     avg_df.index.name = "Average"
-    st.dataframe(avg_df.style.format("{:.4f}"), use_container_width=True)
+    st.dataframe(avg_df.style.format("{:.4f}"), width="stretch")
 
     # Confusion matrix
     st.markdown("### Confusion Matrix")
@@ -560,7 +560,7 @@ elif selected_tab == tab_names[5]:
                 labels={"x": "Predicted", "y": "True", "color": "Count"},
             )
             fig.update_layout(height=450)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
         with col2:
             cm_norm = cm.astype("float") / cm.sum(axis=1)[:, np.newaxis]
@@ -572,7 +572,7 @@ elif selected_tab == tab_names[5]:
                 labels={"x": "Predicted", "y": "True", "color": "Ratio"},
             )
             fig.update_layout(height=450)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
     # ROC Curves
     st.markdown("### ROC Curves")
@@ -595,7 +595,7 @@ elif selected_tab == tab_names[5]:
             yaxis_title="True Positive Rate",
             height=500,
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Feature importance
     st.markdown("### Feature Importances")
@@ -609,7 +609,7 @@ elif selected_tab == tab_names[5]:
             color_continuous_scale="Tealgrn",
         )
         fig.update_layout(height=500, yaxis=dict(autorange="reversed"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
 # ===================================================================
 # TAB 7: Interactive Explorer
@@ -666,7 +666,7 @@ elif selected_tab == tab_names[6]:
         hover_data=["Protocol", "Severity Level", "Traffic Type"],
     )
     fig.update_layout(height=500)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Distribution by attack type
     st.markdown("### Distribution by Attack Type")
@@ -687,7 +687,7 @@ elif selected_tab == tab_names[6]:
             title=f"Distribution of {dist_col} by Attack Type",
         )
     fig.update_layout(height=450)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Data table
     st.markdown("### Filtered Data Table")
@@ -697,4 +697,4 @@ elif selected_tab == tab_names[6]:
         default=["Timestamp", "Source IP Address", "Protocol", "Packet Length",
                  "Anomaly Scores", "Attack Type", "Severity Level", "Action Taken"],
     )
-    st.dataframe(filtered[display_cols].head(100), use_container_width=True, hide_index=True)
+    st.dataframe(filtered[display_cols].head(100), width="stretch", hide_index=True)
