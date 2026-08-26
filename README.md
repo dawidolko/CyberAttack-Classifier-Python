@@ -11,6 +11,7 @@ The project deliberately reports what it actually found rather than what would l
 ![pandas](https://img.shields.io/badge/pandas-2.0%2B-150458?logo=pandas&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?logo=streamlit&logoColor=white)
 ![Kaggle](https://img.shields.io/badge/Kaggle-kagglehub-20BEFF?logo=kaggle&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
