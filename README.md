@@ -125,8 +125,33 @@ download_data.py  →  pipeline.py  →  app.py
 
 ### Prerequisites
 
+- **Docker** — for the containerised path below (recommended)
+
 - **Python 3.10–3.13** (tested with 3.12; 3.14+ is not supported yet for this stack).
 - Internet access on **first run** to download the dataset (~5 MB) unless `data/cybersecurity_attacks.csv` is already present.
+
+### Run with Docker (recommended)
+
+The container installs the scientific stack, runs the experiment and serves the
+dashboard in one step — no local Python setup and no virtual environment:
+
+```bash
+docker compose -f .tools/docker/docker-compose.yml up --build
+```
+
+The dashboard is then available at **http://localhost:8501**.
+
+> **First run downloads the dataset.** The Kaggle CSV is not committed, so the
+> container needs outbound network access the first time it boots. Later boots
+> reuse the copy on the mounted `data/` volume.
+
+Generated artefacts (`results/`, `data/`) are bind-mounted back to the host, so
+charts and metrics written inside the container survive it being removed. Stop
+the stack with:
+
+```bash
+docker compose -f .tools/docker/docker-compose.yml down
+```
 
 ### 1. Clone the Repository
 
