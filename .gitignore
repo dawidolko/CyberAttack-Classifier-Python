@@ -52,3 +52,6 @@ Thumbs.db
 
 # Large dataset file — run `python download_data.py` or `./start.sh` to fetch from Kaggle
 data/cybersecurity_attacks.csv
+
+# Machine-local Claude settings
+.claude/settings.local.json
