@@ -712,7 +712,7 @@ elif selected_tab == tab_names[6]:
     st.dataframe(filtered[display_cols].head(100), width="stretch", hide_index=True)
 
 # ===================================================================
-# TAB 8: Informacje (PL) — przewodnik po aplikacji
+# TAB 8: Information (PL) - app guide
 # ===================================================================
 elif selected_tab == tab_names[7]:
     st.title("ℹ️ Informacje o projekcie i aplikacji")
